@@ -1,24 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Basic analytic linear modules for the analytic continual learning [1-5].
 
-References:
-[1] Zhuang, Huiping, et al.
-    "ACIL: Analytic class-incremental learning with absolute memorization and privacy protection."
-    Advances in Neural Information Processing Systems 35 (2022): 11602-11614.
-[2] Zhuang, Huiping, et al.
-    "GKEAL: Gaussian Kernel Embedded Analytic Learning for Few-Shot Class Incremental Task."
-    Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2023.
-[3] Zhuang, Huiping, et al.
-    "DS-AL: A Dual-Stream Analytic Learning for Exemplar-Free Class-Incremental Learning."
-    Proceedings of the AAAI Conference on Artificial Intelligence. Vol. 38. No. 15. 2024.
-[4] Zhuang, Huiping, et al.
-    "G-ACIL: Analytic Learning for Exemplar-Free Generalized Class Incremental Learning"
-    arXiv preprint arXiv:2403.15706 (2024).
-[5] Fang, Di, et al.
-    "AIR: Analytic Imbalance Rectifier for Continual Learning."
-    arXiv preprint arXiv:2408.10349 (2024).
-"""
 
 import torch
 from torch.nn import functional as F
