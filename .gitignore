@@ -1,0 +1,22 @@
+# 排除数据集文件夹
+/source_data/
+/processed_data/
+
+# 排除权重文件
+*.pth
+*.pt
+*.h5
+*.hdf5
+*.bin
+*.ckpt
+
+# 排除临时文件和 IDE 配置
+*.pyc
+*.swp
+.idea/
+.vscode/
+
+# 排除日志和缓存
+*.log
+.cache/
+

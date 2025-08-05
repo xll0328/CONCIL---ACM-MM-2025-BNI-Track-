@@ -1,0 +1,373 @@
+----------Incremental CBM  baseline experiments----------
+seed: 42
+dataset: cub
+batch_size: 64
+epoch: 5
+learning_rate: 0.0001
+weight_decay: 5e-05
+gamma: 0.95
+concept_lambda: 0.5
+v_backbone: resnet
+saved_dir: base_model
+class_ratio: 1
+conecpt_ratio: 1
+concept_ratio: 1
+num_stages: 2
+buffer_size: 81920
+gg: 0.1
+gg1: 0.1
+gg2: 0.1
+
+
+Starting Incremental Stage 1
+Stage 1 Epoch 0 training loss: 5.564044252355048
+Task 1 Concept Accuracy: 0.7054979586492567
+Task 1 Class Accuracy: 0.09406282361063169
+Full Test on Stage 1 Concept Accuracy: 0.7054949829193101
+Full Test on Stage 1 Class Accuracy: 0.09406282361063169
+concept accu: 0.7054979586492567
+classification accu: 0.09406282361063169
+Stage 1 Epoch 1 training loss: 3.829491805523
+Task 1 Concept Accuracy: 0.6544850201754491
+Task 1 Class Accuracy: 0.47566448049706594
+Full Test on Stage 1 Concept Accuracy: 0.6544850201754491
+Full Test on Stage 1 Class Accuracy: 0.47566448049706594
+concept accu: 0.6544850201754491
+classification accu: 0.47566448049706594
+Stage 1 Epoch 2 training loss: 2.349431131748443
+Task 1 Concept Accuracy: 0.6681302298453811
+Task 1 Class Accuracy: 0.6258198136002762
+Full Test on Stage 1 Concept Accuracy: 0.6681302298453811
+Full Test on Stage 1 Class Accuracy: 0.6258198136002762
+concept accu: 0.6681302298453811
+classification accu: 0.6258198136002762
+Stage 1 Epoch 3 training loss: 1.8334872887489644
+Task 1 Concept Accuracy: 0.679585302274648
+Task 1 Class Accuracy: 0.6831204694511563
+Full Test on Stage 1 Concept Accuracy: 0.6795823265447014
+Full Test on Stage 1 Class Accuracy: 0.6831204694511563
+concept accu: 0.679585302274648
+classification accu: 0.6831204694511563
+Stage 1 Epoch 4 training loss: 1.5736042527442282
+Task 1 Concept Accuracy: 0.6921339554592741
+Task 1 Class Accuracy: 0.6946841560234726
+Full Test on Stage 1 Concept Accuracy: 0.6921339554592741
+Full Test on Stage 1 Class Accuracy: 0.6946841560234726
+concept accu: 0.6921339554592741
+classification accu: 0.6946841560234726
+Stage 1 Epoch 5 training loss: 1.3973594472763387
+Task 1 Concept Accuracy: 0.7021785318938736
+Task 1 Class Accuracy: 0.7212633759061098
+Full Test on Stage 1 Concept Accuracy: 0.7021800197588468
+Full Test on Stage 1 Class Accuracy: 0.7212633759061098
+concept accu: 0.7021785318938736
+classification accu: 0.7212633759061098
+Stage 1 Epoch 6 training loss: 1.2929411796813315
+Task 1 Concept Accuracy: 0.708679013962125
+Task 1 Class Accuracy: 0.7304107697618226
+Full Test on Stage 1 Concept Accuracy: 0.7086775260971516
+Full Test on Stage 1 Class Accuracy: 0.7304107697618226
+concept accu: 0.708679013962125
+classification accu: 0.7304107697618226
+Stage 1 Epoch 7 training loss: 1.1515887271850667
+Task 1 Concept Accuracy: 0.7170467665718401
+Task 1 Class Accuracy: 0.7454263030721436
+Full Test on Stage 1 Concept Accuracy: 0.7170467665718401
+Full Test on Stage 1 Class Accuracy: 0.7454263030721436
+concept accu: 0.7170467665718401
+classification accu: 0.7454263030721436
+Stage 1 Epoch 8 training loss: 1.1186040297467659
+Task 1 Concept Accuracy: 0.7252582933593611
+Task 1 Class Accuracy: 0.7525025888850535
+Full Test on Stage 1 Concept Accuracy: 0.7252582933593611
+Full Test on Stage 1 Class Accuracy: 0.7525025888850535
+concept accu: 0.7252582933593611
+classification accu: 0.7525025888850535
+Stage 1 Epoch 9 training loss: 1.039726900293472
+Task 1 Concept Accuracy: 0.7295284658326687
+Task 1 Class Accuracy: 0.7587159130134622
+Full Test on Stage 1 Concept Accuracy: 0.7295299536976421
+Full Test on Stage 1 Class Accuracy: 0.7587159130134622
+concept accu: 0.7295284658326687
+classification accu: 0.7587159130134622
+Stage 1 Epoch 10 training loss: 0.9698017404434529
+Task 1 Concept Accuracy: 0.7343238546415436
+Task 1 Class Accuracy: 0.7614773904038661
+Full Test on Stage 1 Concept Accuracy: 0.7343238546415436
+Full Test on Stage 1 Class Accuracy: 0.7614773904038661
+concept accu: 0.7343238546415436
+classification accu: 0.7614773904038661
+Stage 1 Epoch 11 training loss: 0.9492019541720127
+Task 1 Concept Accuracy: 0.7392233939985479
+Task 1 Class Accuracy: 0.7600966517086641
+Full Test on Stage 1 Concept Accuracy: 0.7392233939985479
+Full Test on Stage 1 Class Accuracy: 0.7600966517086641
+concept accu: 0.7392233939985479
+classification accu: 0.7600966517086641
+Stage 1 Epoch 12 training loss: 0.9581995961513925
+Task 1 Concept Accuracy: 0.7403006082392011
+Task 1 Class Accuracy: 0.7666551605108733
+Full Test on Stage 1 Concept Accuracy: 0.7403035839691476
+Full Test on Stage 1 Class Accuracy: 0.7666551605108733
+concept accu: 0.7403006082392011
+classification accu: 0.7666551605108733
+Stage 1 Epoch 13 training loss: 0.887695720221134
+Task 1 Concept Accuracy: 0.7449650649304275
+Task 1 Class Accuracy: 0.7625129444252675
+Full Test on Stage 1 Concept Accuracy: 0.7449650649304275
+Full Test on Stage 1 Class Accuracy: 0.7625129444252675
+concept accu: 0.7449650649304275
+classification accu: 0.7625129444252675
+Stage 1 Epoch 14 training loss: 0.8582532932149604
+Task 1 Concept Accuracy: 0.747430457191149
+Task 1 Class Accuracy: 0.7666551605108733
+Full Test on Stage 1 Concept Accuracy: 0.7474319450561223
+Full Test on Stage 1 Class Accuracy: 0.7666551605108733
+concept accu: 0.747430457191149
+classification accu: 0.7666551605108733
+Stage 1 Epoch 15 training loss: 0.8610452210649531
+Task 1 Concept Accuracy: 0.7492709461630938
+Task 1 Class Accuracy: 0.7751121850189852
+Full Test on Stage 1 Concept Accuracy: 0.7492694582981205
+Full Test on Stage 1 Class Accuracy: 0.7751121850189852
+concept accu: 0.7492709461630938
+classification accu: 0.7751121850189852
+Stage 1 Epoch 16 training loss: 0.8505617389653591
+Task 1 Concept Accuracy: 0.7512081463583017
+Task 1 Class Accuracy: 0.772868484639282
+Full Test on Stage 1 Concept Accuracy: 0.7512081463583017
+Full Test on Stage 1 Class Accuracy: 0.772868484639282
+concept accu: 0.7512081463583017
+classification accu: 0.772868484639282
+Stage 1 Epoch 17 training loss: 0.7847861311537154
+Task 1 Concept Accuracy: 0.754512694463952
+Task 1 Class Accuracy: 0.7809803244735933
+Full Test on Stage 1 Concept Accuracy: 0.754512694463952
+Full Test on Stage 1 Class Accuracy: 0.7809803244735933
+concept accu: 0.754512694463952
+classification accu: 0.7809803244735933
+Stage 1 Epoch 18 training loss: 0.7865001784360155
+Task 1 Concept Accuracy: 0.755487246021449
+Task 1 Class Accuracy: 0.7775284777355885
+Full Test on Stage 1 Concept Accuracy: 0.755487246021449
+Full Test on Stage 1 Class Accuracy: 0.7775284777355885
+concept accu: 0.755487246021449
+classification accu: 0.7775284777355885
+Stage 1 Epoch 19 training loss: 0.7687114813226334
+Task 1 Concept Accuracy: 0.7578469998690679
+Task 1 Class Accuracy: 0.7790818087676907
+Full Test on Stage 1 Concept Accuracy: 0.7578469998690679
+Full Test on Stage 1 Class Accuracy: 0.7790818087676907
+concept accu: 0.7578469998690679
+classification accu: 0.7790818087676907
+Stage 1 Epoch 20 training loss: 0.7682247016024082
+Task 1 Concept Accuracy: 0.7582576506016926
+Task 1 Class Accuracy: 0.7852951328960994
+Full Test on Stage 1 Concept Accuracy: 0.7582576506016926
+Full Test on Stage 1 Class Accuracy: 0.7852951328960994
+concept accu: 0.7582576506016926
+classification accu: 0.7852951328960994
+Stage 1 Epoch 21 training loss: 0.7576519019426183
+Task 1 Concept Accuracy: 0.7601427755228357
+Task 1 Class Accuracy: 0.7832240248532966
+Full Test on Stage 1 Concept Accuracy: 0.7601412876578625
+Full Test on Stage 1 Class Accuracy: 0.7832240248532966
+concept accu: 0.7601427755228357
+classification accu: 0.7832240248532966
+Stage 1 Epoch 22 training loss: 0.7370607811719814
+Task 1 Concept Accuracy: 0.763109578279552
+Task 1 Class Accuracy: 0.7804625474628927
+Full Test on Stage 1 Concept Accuracy: 0.763109578279552
+Full Test on Stage 1 Class Accuracy: 0.7804625474628927
+concept accu: 0.763109578279552
+classification accu: 0.7804625474628927
+Stage 1 Epoch 23 training loss: 0.7208630081186903
+Task 1 Concept Accuracy: 0.764389142156571
+Task 1 Class Accuracy: 0.782188470831895
+Full Test on Stage 1 Concept Accuracy: 0.764389142156571
+Full Test on Stage 1 Class Accuracy: 0.782188470831895
+concept accu: 0.764389142156571
+classification accu: 0.782188470831895
+Stage 1 Epoch 24 training loss: 0.7207101107911861
+Task 1 Concept Accuracy: 0.7656106792996322
+Task 1 Class Accuracy: 0.777183293061788
+Full Test on Stage 1 Concept Accuracy: 0.7656106792996322
+Full Test on Stage 1 Class Accuracy: 0.777183293061788
+concept accu: 0.7656106792996322
+classification accu: 0.777183293061788
+Stage 1 Epoch 25 training loss: 0.670790894868526
+Task 1 Concept Accuracy: 0.7660629902515087
+Task 1 Class Accuracy: 0.7818432861580946
+Full Test on Stage 1 Concept Accuracy: 0.7660629902515087
+Full Test on Stage 1 Class Accuracy: 0.7818432861580946
+concept accu: 0.7660629902515087
+classification accu: 0.7818432861580946
+Stage 1 Epoch 26 training loss: 0.7179007041961589
+Task 1 Concept Accuracy: 0.7672458429052647
+Task 1 Class Accuracy: 0.7875388332758025
+Full Test on Stage 1 Concept Accuracy: 0.7672458429052647
+Full Test on Stage 1 Class Accuracy: 0.7875388332758025
+concept accu: 0.7672458429052647
+classification accu: 0.7875388332758025
+Stage 1 Epoch 27 training loss: 0.6837151285181654
+Task 1 Concept Accuracy: 0.7689777177341602
+Task 1 Class Accuracy: 0.779254401104591
+Full Test on Stage 1 Concept Accuracy: 0.7689777177341602
+Full Test on Stage 1 Class Accuracy: 0.779254401104591
+concept accu: 0.7689777177341602
+classification accu: 0.779254401104591
+Stage 1 Epoch 28 training loss: 0.6610143622185322
+Task 1 Concept Accuracy: 0.7693571233023461
+Task 1 Class Accuracy: 0.7880566102865033
+Full Test on Stage 1 Concept Accuracy: 0.7693571233023461
+Full Test on Stage 1 Class Accuracy: 0.7880566102865033
+concept accu: 0.7693571233023461
+classification accu: 0.7880566102865033
+Stage 1 Epoch 29 training loss: 0.6673147519852253
+Task 1 Concept Accuracy: 0.7701323009534239
+Task 1 Class Accuracy: 0.7858129099068001
+Full Test on Stage 1 Concept Accuracy: 0.7701323009534239
+Full Test on Stage 1 Class Accuracy: 0.7858129099068001
+concept accu: 0.7701323009534239
+classification accu: 0.7858129099068001
+Stage 1 Epoch 30 training loss: 0.6722800674590659
+Task 1 Concept Accuracy: 0.7713478866365919
+Task 1 Class Accuracy: 0.7795995857783914
+Full Test on Stage 1 Concept Accuracy: 0.7713478866365919
+Full Test on Stage 1 Class Accuracy: 0.7795995857783914
+concept accu: 0.7713478866365919
+classification accu: 0.7795995857783914
+Stage 1 Epoch 31 training loss: 0.6766050419908889
+Task 1 Concept Accuracy: 0.7727807006058586
+Task 1 Class Accuracy: 0.7930617880566103
+Full Test on Stage 1 Concept Accuracy: 0.7727807006058586
+Full Test on Stage 1 Class Accuracy: 0.7930617880566103
+concept accu: 0.7727807006058586
+classification accu: 0.7930617880566103
+Stage 1 Epoch 32 training loss: 0.6736265614311746
+Task 1 Concept Accuracy: 0.7732404508826015
+Task 1 Class Accuracy: 0.7856403175698999
+Full Test on Stage 1 Concept Accuracy: 0.7732404508826015
+Full Test on Stage 1 Class Accuracy: 0.7856403175698999
+concept accu: 0.7732404508826015
+classification accu: 0.7856403175698999
+Stage 1 Epoch 33 training loss: 0.6481861836732702
+Task 1 Concept Accuracy: 0.773237475152655
+Task 1 Class Accuracy: 0.7804625474628927
+Full Test on Stage 1 Concept Accuracy: 0.7732359872876816
+Full Test on Stage 1 Class Accuracy: 0.7804625474628927
+concept accu: 0.773237475152655
+classification accu: 0.7804625474628927
+Stage 1 Epoch 34 training loss: 0.651769702104812
+Task 1 Concept Accuracy: 0.773997774154
+Task 1 Class Accuracy: 0.7896099413186054
+Full Test on Stage 1 Concept Accuracy: 0.773997774154
+Full Test on Stage 1 Class Accuracy: 0.7896099413186054
+concept accu: 0.773997774154
+classification accu: 0.7896099413186054
+Stage 1 Epoch 35 training loss: 0.6365936442892602
+Task 1 Concept Accuracy: 0.7751940175925155
+Task 1 Class Accuracy: 0.7889195719710045
+Full Test on Stage 1 Concept Accuracy: 0.7751940175925155
+Full Test on Stage 1 Class Accuracy: 0.7889195719710045
+concept accu: 0.7751940175925155
+classification accu: 0.7889195719710045
+Stage 1 Epoch 36 training loss: 0.6304020393402019
+Task 1 Concept Accuracy: 0.7749202504374323
+Task 1 Class Accuracy: 0.7925440110459095
+Full Test on Stage 1 Concept Accuracy: 0.7749202504374323
+Full Test on Stage 1 Class Accuracy: 0.7925440110459095
+concept accu: 0.7749202504374323
+classification accu: 0.7925440110459095
+Stage 1 Epoch 37 training loss: 0.6226537741245107
+Task 1 Concept Accuracy: 0.7759022413197958
+Task 1 Class Accuracy: 0.789264756644805
+Full Test on Stage 1 Concept Accuracy: 0.7759022413197958
+Full Test on Stage 1 Class Accuracy: 0.789264756644805
+concept accu: 0.7759022413197958
+classification accu: 0.789264756644805
+Stage 1 Epoch 38 training loss: 0.6274310854521203
+Task 1 Concept Accuracy: 0.7759171199695285
+Task 1 Class Accuracy: 0.7930617880566103
+Full Test on Stage 1 Concept Accuracy: 0.7759171199695285
+Full Test on Stage 1 Class Accuracy: 0.7930617880566103
+concept accu: 0.7759171199695285
+classification accu: 0.7930617880566103
+Stage 1 Epoch 39 training loss: 0.6253148485371407
+Task 1 Concept Accuracy: 0.7760510278171235
+Task 1 Class Accuracy: 0.7951328960994132
+Full Test on Stage 1 Concept Accuracy: 0.7760510278171235
+Full Test on Stage 1 Class Accuracy: 0.7951328960994132
+concept accu: 0.7760510278171235
+classification accu: 0.7951328960994132
+Stage 1 Epoch 40 training loss: 0.5898031817471727
+Task 1 Concept Accuracy: 0.7771684144120553
+Task 1 Class Accuracy: 0.7875388332758025
+Full Test on Stage 1 Concept Accuracy: 0.7771684144120553
+Full Test on Stage 1 Class Accuracy: 0.7875388332758025
+concept accu: 0.7771684144120553
+classification accu: 0.7875388332758025
+Stage 1 Epoch 41 training loss: 0.5976296469886252
+Task 1 Concept Accuracy: 0.7777412424267672
+Task 1 Class Accuracy: 0.7932343803935106
+Full Test on Stage 1 Concept Accuracy: 0.777739754561794
+Full Test on Stage 1 Class Accuracy: 0.7932343803935106
+concept accu: 0.7777412424267672
+classification accu: 0.7932343803935106
+Stage 1 Epoch 42 training loss: 0.5921505600848096
+Task 1 Concept Accuracy: 0.7780328639615297
+Task 1 Class Accuracy: 0.797204004142216
+Full Test on Stage 1 Concept Accuracy: 0.7780328639615297
+Full Test on Stage 1 Class Accuracy: 0.797204004142216
+concept accu: 0.7780328639615297
+classification accu: 0.797204004142216
+Stage 1 Epoch 43 training loss: 0.6057634128535048
+Task 1 Concept Accuracy: 0.7781727232690179
+Task 1 Class Accuracy: 0.7939247497411115
+Full Test on Stage 1 Concept Accuracy: 0.7781727232690179
+Full Test on Stage 1 Class Accuracy: 0.7939247497411115
+concept accu: 0.7781727232690179
+classification accu: 0.7939247497411115
+Stage 1 Epoch 44 training loss: 0.5815739387527425
+Task 1 Concept Accuracy: 0.7792782069441634
+Task 1 Class Accuracy: 0.7946151190887124
+Full Test on Stage 1 Concept Accuracy: 0.7792782069441634
+Full Test on Stage 1 Class Accuracy: 0.7946151190887124
+concept accu: 0.7792782069441634
+classification accu: 0.7946151190887124
+Stage 1 Epoch 45 training loss: 0.5943155713537907
+Task 1 Concept Accuracy: 0.7787753085831954
+Task 1 Class Accuracy: 0.7896099413186054
+Full Test on Stage 1 Concept Accuracy: 0.7787753085831954
+Full Test on Stage 1 Class Accuracy: 0.7896099413186054
+concept accu: 0.7787753085831954
+classification accu: 0.7896099413186054
+Stage 1 Epoch 46 training loss: 0.5998571185355491
+Task 1 Concept Accuracy: 0.7788526775618059
+Task 1 Class Accuracy: 0.7918536416983086
+Full Test on Stage 1 Concept Accuracy: 0.7788526775618059
+Full Test on Stage 1 Class Accuracy: 0.7918536416983086
+concept accu: 0.7788526775618059
+classification accu: 0.7918536416983086
+Stage 1 Epoch 47 training loss: 0.6145103884504196
+Task 1 Concept Accuracy: 0.7795698284789259
+Task 1 Class Accuracy: 0.7932343803935106
+Full Test on Stage 1 Concept Accuracy: 0.7795698284789259
+Full Test on Stage 1 Class Accuracy: 0.7932343803935106
+concept accu: 0.7795698284789259
+classification accu: 0.7932343803935106
+Stage 1 Epoch 48 training loss: 0.5729349337993784
+Task 1 Concept Accuracy: 0.7798302048492495
+Task 1 Class Accuracy: 0.7877114256127028
+Full Test on Stage 1 Concept Accuracy: 0.7798302048492495
+Full Test on Stage 1 Class Accuracy: 0.7877114256127028
+concept accu: 0.7798302048492495
+classification accu: 0.7877114256127028
+Stage 1 Epoch 49 training loss: 0.5880916578338501
+Task 1 Concept Accuracy: 0.780239367716901
+Task 1 Class Accuracy: 0.794269934414912
+Full Test on Stage 1 Concept Accuracy: 0.780239367716901
+Full Test on Stage 1 Class Accuracy: 0.794269934414912
+concept accu: 0.780239367716901
+classification accu: 0.794269934414912
+Starting Incremental Stage 2

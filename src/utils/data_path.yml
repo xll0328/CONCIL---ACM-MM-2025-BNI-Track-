@@ -1,0 +1,12 @@
+cub:
+  processed_dir: /hpc2hdd/home/songninglai/CBMBackdoor/processed_data/cub_processed_data
+  source_dir: /hpc2hdd/home/songninglai/CBMBackdoor/source_data/CUB_200_2011
+awa:
+  processed_dir: /hpc2hdd/home/songninglai/CBMBackdoor/processed_data/awa_processed_data
+  source_dir: /hpc2hdd/home/songninglai/CBMBackdoor/source_data/Animals_with_Attributes2
+cebab:
+  processed_dir: /hpc2hdd/home/songninglai/CBMBackdoor/processed_data/cebab_processed_data
+  source_dir: /hpc2hdd/home/songninglai/CBMBackdoor/source_data/cebab
+imdb:
+  processed_dir: /hpc2hdd/home/songninglai/CBMBackdoor/processed_data/imdb_processed_data
+  source_dir: /hpc2hdd/home/songninglai/CBMBackdoor/source_data/imdb
