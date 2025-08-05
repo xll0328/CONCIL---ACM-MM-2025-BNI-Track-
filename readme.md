@@ -4,7 +4,7 @@
 
 Official PyTorch implementation of the ACM MM 2025 paper **"Learning New Concepts, Remembering the Old: Continual Learning for Multimodal Concept Bottleneck Models"**
 
-[[Paper]](https://arxiv.org/abs/xxx) | [[Project Page]](https://github.com/xll0328/CONCIL---ACM-MM-2025-BNI-Track-/)
+[[Paper]](https://arxiv.org/pdf/2411.17471) | [[Project Page]](https://github.com/xll0328/CONCIL---ACM-MM-2025-BNI-Track-/)
 
 
 ## Table of Contents
