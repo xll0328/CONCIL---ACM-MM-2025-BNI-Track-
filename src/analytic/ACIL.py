@@ -1,17 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Implementation of the ACIL [1] and the G-ACIL [2].
-The G-ACIL is a generalization of the ACIL in the generalized setting.
-For the popular setting, the G-ACIL is equivalent to the ACIL.
 
-References:
-[1] Zhuang, Huiping, et al.
-    "ACIL: Analytic class-incremental learning with absolute memorization and privacy protection."
-    Advances in Neural Information Processing Systems 35 (2022): 11602-11614.
-[2] Zhuang, Huiping, et al.
-    "G-ACIL: Analytic Learning for Exemplar-Free Generalized Class Incremental Learning"
-    arXiv preprint arXiv:2403.15706 (2024).
-"""
 
 import torch
 from os import path
