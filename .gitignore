@@ -1,8 +1,11 @@
-# 排除数据集文件夹
+# Dataset directories (user-specific)
 /source_data/
 /processed_data/
 
-# 排除权重文件
+# Local path config (copy from data_path.example.yml and edit)
+src/utils/data_path.yml
+
+# Model checkpoints and weights
 *.pth
 *.pt
 *.h5
@@ -10,13 +13,27 @@
 *.bin
 *.ckpt
 
-# 排除临时文件和 IDE 配置
+# Python
 *.pyc
+__pycache__/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE and editor
 *.swp
+*.swo
 .idea/
 .vscode/
+*.code-workspace
 
-# 排除日志和缓存
+# Logs and cache
 *.log
 .cache/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
 

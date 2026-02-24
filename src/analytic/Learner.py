@@ -11,9 +11,8 @@ loader_t = DataLoader[Union[torch.Tensor, torch.Tensor]]
 class Learner(metaclass=ABCMeta):
 
 
-    # base_training、learn、before_validation 和 inference 方法用于定义学习器的训练、增量学习、验证前处理和推理过程。
-    # save_object 方法用于保存模型。
-    # __call__ 方法允许将 Learner 实例作为函数调用，调用 inference 方法进行推理。
+    # base_training, learn, before_validation, inference: training, incremental learning, pre-validation, and inference.
+    # save_object: save model. __call__: call inference.
     def __init__(
         self,
         args: Dict[str, Any],

@@ -1,3 +1,7 @@
+"""
+NOT THE FINAL CODE USED IN THE PROJECT.
+Backup variant of CONCIL_1111. For paper reproduction use CONCIL_1114.py.
+"""
 import os
 import sys
 sys.path.append(os.getcwd())
@@ -25,7 +29,7 @@ import csv
 import matplotlib.pyplot as plt
 
 
-# 导入了 CONCIL 相关的模块
+# CONCIL analytic modules (RecursiveLinear, Buffer, Learner)
 # from src.analytic.ACIL import ACIL, ACILLearner
 # from src.analytic.AnalyticLinear import RecursiveLinear
 from src.analytic.utils import set_weight_decay, validate
@@ -149,11 +153,11 @@ class CONCIL(nn.Module):
         self.device = device
 
         factory_kwargs = {"device": device, "dtype": dtype}
-        # 初始化 backbone 特征提取器和 backbone_output 输出维度。
+        # Backbone feature extractor and output dimension
         self.backbone = backbone
         self.backbone_output = backbone_output
 
-        # 初始化 buffer，使用 RandomBuffer 类，将特征提取器的输出存储在缓冲区中。
+        # RandomBuffer for storing backbone outputs
         self.buffer_size = buffer_size
         self.buffer = RandomBuffer(backbone_output, buffer_size, **factory_kwargs)
         self.buffer_concept = RandomBuffer(backbone_output, buffer_size, **factory_kwargs)
@@ -176,20 +180,17 @@ class CONCIL(nn.Module):
         # self._initialize_weights()
 
         ## CONCIL
-        # 初始化 ACIL 相关的线性分析层
-        # 初始化 analytic_linear，使用指定的线性分析层类型（默认为 RecursiveLinear）
+        # Analytic linear layers (RecursiveLinear by default)
         self.analytic_linear_concept = linear(buffer_size, gg, **factory_kwargs)
         self.analytic_linear_class = linear(buffer_size, gg, **factory_kwargs)
 
-        # # 初始化是否冻结 backbone 的标志
-        # self.frozen_backbone = False
-        # 后续无训练过程了，全是求参数矩阵的解析解
+        # No further training; updates are analytic (closed-form)
         self.eval()
 
-    ## 对输入 X 进行特征提取（self.backbone(X)），然后将提取的特征传递给缓冲区 self.buffer 进行扩展。
+    ## Extract features via backbone and pass to buffer for expansion.
     @torch.no_grad()
     def concept_feature_expansion(self, X: torch.Tensor) -> torch.Tensor:
-        #pdb.set_trace()  # 设置断点
+        # pdb.set_trace()  # breakpoint
         #print("backbone(X).shape():",self.backbone(X).shape())
         return self.buffer_concept(self.backbone(X))
 
@@ -197,20 +198,20 @@ class CONCIL(nn.Module):
     def class_feature_expansion(self, concept_pred: torch.Tensor) -> torch.Tensor:
         return self.buffer_class(concept_pred)
     
-    ## 特征传递给线性分析层 
+    ## Pass features to analytic linear layer
     @torch.no_grad()
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         concept_pred = self.analytic_linear_concept(self.concept_feature_expansion(X))
         class_pred = self.analytic_linear_class(self.class_feature_expansion(concept_pred))
         return concept_pred, class_pred
     
-    # 调用线性分析层的 update 方法，进行内部参数的更新。
+    # Call analytic layer update (internal parameter update).
     @torch.no_grad()
     def update(self) -> None:
         self.analytic_linear_concept.update()
         self.analytic_linear_class.update()
 
-    ## 拟合求解
+    ## Fit (closed-form solve)
     @torch.no_grad()
     def fit_concept_linear(self, X: torch.Tensor, y: torch.Tensor, *args, **kwargs) -> None:
         # print(y)
@@ -219,27 +220,27 @@ class CONCIL(nn.Module):
         y = y.long()
         # print("lllyyy: ", y.shape)
         # print(y)
-        # 将标签 y 转换为 one-hot 编码形式 Y
+        # Convert labels y to one-hot Y
         # Y = torch.nn.functional.one_hot(y)
         Y = y
-        # 对输入 X 进行特征扩展
+        # Feature expansion for input X
         # print("111111")
         X = self.concept_feature_expansion(X)
         # print(X.shape)
         # print(Y.shape)
-        # pdb.set_trace()  # 设置断点        
+        # pdb.set_trace()  # breakpoint        
         # print("2222222")
-        # 调用线性分析层的 fit 方法，将扩展后的特征 X 和 one-hot 编码的标签 Y 传递给线性分析层进行拟合。
+        # Fit analytic layer with expanded X and one-hot Y.
         self.analytic_linear_concept.fit(X, Y)
 
-    ## 拟合求解
+    ## Fit (closed-form solve)
     @torch.no_grad()
     def fit_class_linear(self, X: torch.Tensor, y: torch.Tensor, *args, **kwargs) -> None:
-        # 将标签 y 转换为 one-hot 编码形式 Y
+        # Convert labels y to one-hot Y
         Y = torch.nn.functional.one_hot(y)
-        # 对输入 X 进行特征扩展
+        # Feature expansion for input X
         X = self.class_feature_expansion(X)
-        # 调用线性分析层的 fit 方法，将扩展后的特征 X 和 one-hot 编码的标签 Y 传递给线性分析层进行拟合。
+        # Fit analytic layer with expanded X and one-hot Y.
         self.analytic_linear_class.fit(X, Y)
 
 
@@ -281,7 +282,7 @@ class IMGBaseModel(nn.Module):
         self._initialize_weights()
 
     def forward(self, x, num_concepts=None):
-        # 动态控制 concept 的输出
+        # Dynamically control concept output dimension for current phase
         if self.concept_fc is None:
             concepts = self.concept_encoder(x)
         else:
@@ -289,7 +290,7 @@ class IMGBaseModel(nn.Module):
             concepts = self.concept_fc(hidden_output)
 
         if num_concepts is not None:
-            # 截取 concepts 使其维度符合当前阶段的数量
+            # Truncate concepts to current phase dimension
             concepts = concepts[:, :num_concepts]
 
         return concepts, self.final_fc(concepts), hidden_output
@@ -307,7 +308,7 @@ class IMGBaseModel(nn.Module):
                 init.constant_(layer.bias, 0)
 
     def expand_concept_layer(self, num_concepts):
-        # 扩展 concept 层
+        # Expand concept layer output dimension
         if self.concept_fc is None:
             self.concept_encoder.fc = nn.Linear(2048, num_concepts).to(self.device)
         else:
@@ -315,7 +316,7 @@ class IMGBaseModel(nn.Module):
         self._initialize_weights()
 
     def expand_classifier_layer(self, num_classes):
-        # 扩展分类器层
+        # Expand classifier layer output dimension
         hidden_size = 512
         self.final_fc = nn.Sequential(
             nn.Linear(self.num_concepts, hidden_size).to(self.device),
@@ -350,7 +351,7 @@ class Metric():
             concept = concept.int()
         elif self.concept_mode == 'multi':
             concept_pred = concept_pred.argmax(-1)
-        # pdb.set_trace()  # 设置断点
+        # pdb.set_trace()  # breakpoint
         self.c_accumulator[0] += (concept_pred == concept).sum().item()
         self.c_accumulator[1] += concept_pred.numel()
         label_pred = label_pred.argmax(dim = -1)
@@ -529,14 +530,14 @@ class IncrementalIMGDataset(Dataset):
             self.n_class = CONFIG['awa']['N_CLASSES']
             self.n_concept = CONFIG['awa']['N_CONCEPTS']
 
-        # 根据给定的比例确定类别和概念的限制
+        # Set class/concept index bounds from ratios for this phase
         self.min_class_idx = int(self.n_class * prev_class_ratio)
         self.max_class_idx = int(self.n_class * class_ratio)
         self.max_concept_idx = int(self.n_concept * concept_ratio)
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
         self.transform = img_augment(split=split, resol=resol, mean=mean, std=std)
-        self._set()  # 设置当前阶段的数据
+        self._set()  # Populate data for current phase
 
     def _set(self):
         self.image_path = []
@@ -545,10 +546,10 @@ class IncrementalIMGDataset(Dataset):
         self.one_hot_label = []
         for instance in self.data:
             label = instance['label']
-            # 只加载当前阶段和前一个阶段之间的类别数据
+            # Load only classes in [min_class_idx, max_class_idx) for this phase
             if label < self.min_class_idx or label >= self.max_class_idx:
                 continue
-            # 概念的访问权限是累积递增的
+            # Concept access is cumulative: mask concepts beyond current phase
             concept = [c if idx < self.max_concept_idx else 0 for idx, c in enumerate(instance['concept'])]
             self.image_path.append(instance['img_path'])
             self.concept.append(concept)
@@ -606,7 +607,7 @@ class IncrementalIMGTrainer(BASETrainer):
 
 
     def expand_model(self, stage):
-        # 扩展概念和分类器层
+        # Expand concept and classifier layers for this phase
         if stage == 0:
             new_num_concepts = int(self.num_concepts*self.args.concept_ratio)
             new_num_classes = int(self.num_classes*self.args.class_ratio)
@@ -623,10 +624,10 @@ class IncrementalIMGTrainer(BASETrainer):
     def loss(self, concept_pred, concept, label_pred, label, concept_lambda, num_concepts, stage):
         
         def custom_activation(x):
-            # 四舍五入，小于 0.5 的设为 0，大于等于 0.5 的设为 1
+            # Round: <0.5 -> 0, >=0.5 -> 1
             return torch.where(x < 0.5, torch.tensor(0.0), torch.tensor(1.0))
         
-        # 只使用前 num_concepts 个概念进行损失计算
+        # Use only first num_concepts dimensions for loss
         concept_subset = concept[:, :num_concepts]
         # print("No Sigmod")
         print("num_concepts:",num_concepts)
@@ -636,7 +637,7 @@ class IncrementalIMGTrainer(BASETrainer):
         if stage == 0:
             concept_pred = torch.sigmoid(concept_pred)
         else:
-            # pdb.set_trace()  # 设置断点 
+            # pdb.set_trace()  # breakpoint 
             concept_pred = concept_pred[:, :num_concepts]
             concept_pred = custom_activation(concept_pred)
 
@@ -683,15 +684,15 @@ class IncrementalIMGTrainer(BASETrainer):
             class_ratio = self.args.class_ratio + (stage+1)*(1-self.args.class_ratio)/(self.num_stages-1)
             concept_ratio = self.args.concept_ratio + (stage+1)*(1-self.args.concept_ratio)/(self.num_stages-1)
             
-            # 重新初始化优化器和调度器
+            # Reinitialize optimizer and scheduler for new layers
             self.optimizer = Adam(self.model.parameters(), lr=self.args.learning_rate, weight_decay=self.args.weight_decay)
             self.scheduler = ExponentialLR(optimizer=self.optimizer, gamma=self.args.gamma)
 
 
-            ### 自己写一波CONCIL吧
+            ### CONCIL phase (analytic updates)
             ###################
             if stage == 0:
-            ## 第一阶段正常训练模型
+            ## Base phase: standard training
                 epochs = 20
                 # for epoch in range(self.epoch):
                 for epoch in range(epochs):
@@ -699,9 +700,8 @@ class IncrementalIMGTrainer(BASETrainer):
                     self.model.train()
                     for data in tqdm.tqdm(self.train_loader, postfix=f'Training Stage {stage+1} Epoch {epoch}'):                    
                         for i, item in enumerate(data):
-                            data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                        img, concept, label, _ = data
-                        # 调整前向传播中的概念输出维度
+                            data[i] = item.to(self.device)                        img, concept, label, _ = data
+                        # Forward with concept output truncated to current phase
                         
                         concept_pred, label_pred, hidden_output = self.model(img, num_concepts=self.model.num_concepts)
                         loss = self.loss(concept_pred, concept, label_pred, label, concept_lambda=self.args.concept_lambda, num_concepts=self.model.num_concepts,stage=stage)
@@ -720,7 +720,7 @@ class IncrementalIMGTrainer(BASETrainer):
                 self.save_model(stage, self.epoch - 1)
             
             else:
-            ## 后续阶段CONCIL算法
+            ## Later phases: CONCIL (analytic) updates
                 epoch = 0
                 self.model.eval()
                 self.backbone = self.model.backbone
@@ -744,8 +744,7 @@ class IncrementalIMGTrainer(BASETrainer):
 
                 for data in tqdm.tqdm(self.train_loader, postfix=f'Training Stage {stage+1}'):                    
                     for i, item in enumerate(data):
-                        data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                    img, concept, label, _ = data
+                        data[i] = item.to(self.device)                    img, concept, label, _ = data
                     ###
                     concept_pred, label_pred, hidden_output = self.model(img, num_concepts=self.model.num_concepts)
                     print(self.model.num_concepts)
@@ -763,17 +762,17 @@ class IncrementalIMGTrainer(BASETrainer):
                 self.plog(f'Stage {stage+1} Epoch {epoch} training loss: {avg_epoch_loss}')
                 self.test(stage)
                 self.save_model(stage, self.epoch - 1)
-                #### CONCIL的训练过程
+                #### CONCIL training step
 
 
                 
 
 
-        # 绘制各阶段的概念和类别准确率变化曲线
+        # Plot concept and class accuracy over phases
         self.plot_accuracy_curves()
-        # 绘制各阶段的概念和类别遗忘率变化曲线
+        # Plot concept and class forgetting rate over phases
         self.plot_forgetting_curves()
-        # 计算均值
+        # Compute mean metrics
         self.calculate_mean_metrics()
 
 
@@ -881,7 +880,7 @@ class IncrementalIMGTrainer(BASETrainer):
         print('concept accu: ', metric.concept_accu)
         print('classification accu: ', metric.clf_accu)
 
-        # 计算遗忘率
+        # Compute forgetting rates
         if stage > 0:
             for task in range(stage + 1):
                 if task < stage:
@@ -919,7 +918,7 @@ class IncrementalIMGTrainer(BASETrainer):
     def plot_accuracy_curves(self):
         plt.figure(figsize=(10, 5))
         
-        # 绘制每个stage的概念和类别准确率
+        # Plot per-stage concept and class accuracy
         for stage in range(self.num_stages):
             plt.plot(self.stage_concept_accuracies[stage], label=f'Stage {stage+1} Concept Accuracy')
             plt.plot(self.stage_class_accuracies[stage], label=f'Stage {stage+1} Class Accuracy')
@@ -934,7 +933,7 @@ class IncrementalIMGTrainer(BASETrainer):
     def plot_forgetting_curves(self):
         plt.figure(figsize=(10, 5))
         
-        # 绘制每个stage的概念和类别遗忘率
+        # Plot per-stage concept and class forgetting rates
         for stage in range(1, self.num_stages):
             plt.plot(self.concept_forgetting_rates[stage], label=f'Stage {stage+1} Concept Forgetting Rate')
             plt.plot(self.class_forgetting_rates[stage], label=f'Stage {stage+1} Class Forgetting Rate')
@@ -988,7 +987,7 @@ class IncrementalIMGTrainer(BASETrainer):
         print(f'Overall Concept Forgetting Rate: {overall_concept_forgetting_rate}')
         print(f'Overall Class Forgetting Rate: {overall_class_forgetting_rate}')
 
-        # 保存总体结果到CSV文件
+        # Save overall results to CSV
         csv_path = join(os.getcwd(), self.args.saved_dir, self.time, 'overall_metrics.csv')
         with open(csv_path, mode='w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)

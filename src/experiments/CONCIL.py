@@ -1,3 +1,8 @@
+"""
+NOT THE FINAL CODE USED IN THE PROJECT.
+This script depends on src.analytic.ACIL which is not included in the repo.
+Use CONCIL_1114.py for the CONCIL implementation (RecursiveLinear, no ACIL).
+"""
 import os
 import sys
 sys.path.append(os.getcwd())
@@ -26,7 +31,7 @@ import csv
 
 import matplotlib.pyplot as plt
 
-# 导入了 ACIL 相关的模块
+# ACIL/analytic modules (RecursiveLinear, Buffer, Learner)
 from src.analytic.ACIL import ACIL, ACILLearner
 from src.analytic.AnalyticLinear import RecursiveLinear
 
@@ -150,11 +155,11 @@ class IMGBaseModel(nn.Module):
 
         self._initialize_weights()
 
-        # 初始化 ACIL 相关的线性分析层
+        # Analytic linear layers
         self.concept_linear = RecursiveLinear(num_concepts, device=self.device)
         self.class_linear = RecursiveLinear(num_classes, device=self.device)
 
-        # 初始化是否冻结 backbone 的标志
+        # Freeze backbone flag
         self.frozen_backbone = False
 
     def forward(self, x, num_concepts=None, use_acil=False):
@@ -167,14 +172,14 @@ class IMGBaseModel(nn.Module):
         if num_concepts is not None:
             concepts = concepts[:, :num_concepts]
 
-        # 使用 ACIL 的线性分析层处理特征
+        # Analytic linear layer for concept features
         concepts = self.concept_linear(concepts)
 
         if use_acil:
-            # 使用 ACIL 的线性分析层处理类别预测
+            # Analytic linear layer for class prediction
             class_pred = self.class_linear(concepts)
         else:
-            # 使用分类头进行类别预测
+            # Class head for final prediction
             class_pred = self.final_fc(concepts)
 
         return concepts, class_pred
@@ -439,14 +444,14 @@ class IncrementalIMGDataset(Dataset):
             self.n_class = CONFIG['awa']['N_CLASSES']
             self.n_concept = CONFIG['awa']['N_CONCEPTS']
 
-        # 根据给定的比例确定类别和概念的限制
+        # Set class/concept index bounds from ratios for this phase
         self.min_class_idx = int(self.n_class * prev_class_ratio)
         self.max_class_idx = int(self.n_class * class_ratio)
         self.max_concept_idx = int(self.n_concept * concept_ratio)
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
         self.transform = img_augment(split=split, resol=resol, mean=mean, std=std)
-        self._set()  # 设置当前阶段的数据
+        self._set()  # Populate data for current phase
 
     def _set(self):
         self.image_path = []
@@ -455,10 +460,10 @@ class IncrementalIMGDataset(Dataset):
         self.one_hot_label = []
         for instance in self.data:
             label = instance['label']
-            # 只加载当前阶段和前一个阶段之间的类别数据
+            # Load only classes in [min_class_idx, max_class_idx) for this phase
             if label < self.min_class_idx or label >= self.max_class_idx:
                 continue
-            # 概念的访问权限是累积递增的
+            # Concept access is cumulative: mask concepts beyond current phase
             concept = [c if idx < self.max_concept_idx else 0 for idx, c in enumerate(instance['concept'])]
             self.image_path.append(instance['img_path'])
             self.concept.append(concept)
@@ -516,7 +521,7 @@ class IncrementalIMGTrainer(BASETrainer):
 
 
     def expand_model(self, stage):
-        # 扩展概念和分类器层
+        # Expand concept and classifier layers for this phase
         # new_num_concepts = int(self.num_concepts * (self.args.concept_ratio + (stage) * (1 - self.args.concept_ratio) / self.num_stages))
         # new_num_classes = int(self.num_classes * (self.args.class_ratio + (stage) * (1 - self.args.class_ratio) / self.num_stages))
         # print("stage: ",stage)
@@ -539,7 +544,7 @@ class IncrementalIMGTrainer(BASETrainer):
 
 
     def loss(self, concept_pred, concept, label_pred, label, concept_lambda, num_concepts):
-        # 只使用前 num_concepts 个概念进行损失计算
+        # Use only first num_concepts dimensions for loss
         concept_subset = concept[:, :num_concepts]
         concept_pred = torch.sigmoid(concept_pred)
         concept_loss = self.bce(concept_pred, concept_subset)
@@ -567,15 +572,14 @@ class IncrementalIMGTrainer(BASETrainer):
             concept_ratio = self.args.concept_ratio + (stage+1)*(1-self.args.concept_ratio)/(self.num_stages-1)
 
             if stage == 0:
-                # 第一个阶段正常训练模型
+                # First phase: standard training
                 self.model.unfreeze_backbone()
                 for epoch in range(self.epoch):
                     epoch_loss = []
                     self.model.train()
                     for data in tqdm.tqdm(self.train_loader, postfix=f'Training Stage {stage+1} Epoch {epoch}'):                    
                         for i, item in enumerate(data):
-                            data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                        img, concept, label, _ = data
+                            data[i] = item.to(self.device)                        img, concept, label, _ = data
                         concept_pred, label_pred = self.model(img, num_concepts=self.model.num_concepts, use_acil=False)
                         loss = self.loss(concept_pred, concept, label_pred, label, concept_lambda=self.args.concept_lambda, num_concepts=self.model.num_concepts)
                         self.optimizer.zero_grad()
@@ -589,14 +593,13 @@ class IncrementalIMGTrainer(BASETrainer):
                     clf_accu = self.test(stage)
                     self.scheduler.step()
                 self.save_model(stage, self.epoch - 1)
-                self.model.freeze_backbone()  # 冻结 backbone
+                self.model.freeze_backbone()
             else:
-                # 后续阶段使用 ACIL 的算法
+                # Later phases: ACIL/analytic updates
                 self.model.eval()
                 for data in tqdm.tqdm(self.train_loader, postfix=f'Training Stage {stage+1}'):                    
                     for i, item in enumerate(data):
-                        data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                    img, concept, label, _ = data
+                        data[i] = item.to(self.device)                    img, concept, label, _ = data
                     concept_pred, label_pred = self.model(img, num_concepts=self.model.num_concepts, use_acil=True)
                     self.model.fit_concept_linear(concept_pred, concept)
                     self.model.fit_class_linear(label_pred, label)
@@ -624,7 +627,7 @@ class IncrementalIMGTrainer(BASETrainer):
             csvwriter.writerow(['Task', 'Concept Accuracy', 'Class Accuracy'])
 
             for prev_stage in range(stage + 1):
-                metric.reset()  # 重置 Metric 对象
+                metric.reset()
                 if prev_stage == 0:
                     prev_class_ratio = 0.0
                     class_ratio = self.args.class_ratio
@@ -648,8 +651,7 @@ class IncrementalIMGTrainer(BASETrainer):
                 stage_metric = Metric(concept_mode='binary', clf_mode='multi')
                 for data in tqdm.tqdm(test_loader, postfix=f'Testing Task {prev_stage + 1}'):
                     for i, item in enumerate(data):
-                        data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                    img, concept, label, one_hot_label = data
+                        data[i] = item.to(self.device)                    img, concept, label, one_hot_label = data
                     with torch.no_grad():
                         concept_pred, label_pred = self.model(img, num_concepts=self.model.num_concepts)
                         concept_subset = concept[:, :self.model.num_concepts]
@@ -657,11 +659,11 @@ class IncrementalIMGTrainer(BASETrainer):
                         # print(label_pred)
                         metric.add(concept_pred, label_pred, concept_subset, label, one_hot_label)
                         stage_metric.add(concept_pred, label_pred, concept_subset, label, one_hot_label)
-                                        # 调试输出
+                                        # Debug output
                 print(f'Task {prev_stage + 1} Label Predictions: {label_pred.argmax(dim=-1)}')
                 print(f'Task {prev_stage + 1} True Labels: {label}')
                 
-                # 打印当前任务的 concept accuracy 和 class accuracy
+                # Log current task concept and class accuracy
                 print(f'Task {prev_stage + 1} Concept Accuracy: {stage_metric.concept_accu}')
                 print(f'Task {prev_stage + 1} Class Accuracy: {stage_metric.clf_accu}')
                 self.plog(f'Task {prev_stage + 1} Concept Accuracy: {stage_metric.concept_accu}')
@@ -671,36 +673,35 @@ class IncrementalIMGTrainer(BASETrainer):
                 stage_class_accuracies.append(stage_metric.clf_accu)
                 csvwriter.writerow([prev_stage + 1, stage_metric.concept_accu, stage_metric.clf_accu])
                 
-                # 最后一个stage了---算了所有stage都测吧
+                # Final stage: run full test over all tasks
                 # if prev_stage == stage:
                 if prev_stage == stage:
-                    ## 全部都测一次，完整的concept和完整的label：就是让prev_class_ratio=0
+                    ## Full test with prev_class_ratio=0 (all concepts and labels)
                     test_loader = DataLoader(dataset=IncrementalIMGDataset(self.data_path, split='test', class_ratio=class_ratio, prev_class_ratio=0, concept_ratio=concept_ratio), batch_size=self.batch_size, shuffle=True, num_workers=16)
-                    # 初始化一个新的 Metric 对象用于完整测试
+                    # New Metric for full test
                     full_test_metric = Metric(concept_mode='binary', clf_mode='multi')
-                    # 遍历完整测试数据集
+                    # Iterate full test dataset
                     for data in tqdm.tqdm(test_loader, postfix=f'Full Test on Stage {stage + 1}'):
                         for i, item in enumerate(data):
-                            data[i] = item.to(self.device)  # 确保所有输入张量都在 self.device 上
-                        img, concept, label, one_hot_label = data
+                            data[i] = item.to(self.device)                        img, concept, label, one_hot_label = data
                         with torch.no_grad():
                             concept_pred, label_pred = self.model(img, num_concepts=self.model.num_concepts)
                             concept_subset = concept[:, :self.model.num_concepts]
                             full_test_metric.add(concept_pred, label_pred, concept_subset, label, one_hot_label)
                     
-                    # 打印完整测试结果
+                    # Log full test results
                     print(f'Full Test on Stage {stage + 1} Concept Accuracy: {full_test_metric.concept_accu}')
                     print(f'Full Test on Stage {stage + 1} Class Accuracy: {full_test_metric.clf_accu}')
                     self.plog(f'Full Test on Stage {stage + 1} Concept Accuracy: {full_test_metric.concept_accu}')
                     self.plog(f'Full Test on Stage {stage + 1} Class Accuracy: {full_test_metric.clf_accu}')
                     
-                    # # 将完整测试结果保存到最后一个stage的metrics.csv中
+                    # Save full test results to metrics.csv
                     # csv_path = join(os.getcwd(), self.args.saved_dir, self.time, f'stage_{stage+1}_metrics.csv')
                     # with open(csv_path, mode='a', newline='') as csvfile:
                     #     csvwriter = csv.writer(csvfile)
                     #     csvwriter.writerow(['Full Test', full_test_metric.concept_accu, full_test_metric.clf_accu])
 
-                    # 将完整测试结果保存到最后一个stage的metrics.csv中
+                    # Write full test row to metrics.csv
                     csvwriter.writerow(['Full Test', full_test_metric.concept_accu, full_test_metric.clf_accu])
 
 
@@ -717,7 +718,7 @@ class IncrementalIMGTrainer(BASETrainer):
         print('concept accu: ', metric.concept_accu)
         print('classification accu: ', metric.clf_accu)
 
-        # 计算遗忘率
+        # Compute forgetting rates
         if stage > 0:
             for task in range(stage + 1):
                 if task < stage:
@@ -755,7 +756,7 @@ class IncrementalIMGTrainer(BASETrainer):
     def plot_accuracy_curves(self):
         plt.figure(figsize=(10, 5))
         
-        # 绘制每个stage的概念和类别准确率
+        # Plot per-stage concept and class accuracy
         for stage in range(self.num_stages):
             plt.plot(self.stage_concept_accuracies[stage], label=f'Stage {stage+1} Concept Accuracy')
             plt.plot(self.stage_class_accuracies[stage], label=f'Stage {stage+1} Class Accuracy')
@@ -770,7 +771,7 @@ class IncrementalIMGTrainer(BASETrainer):
     def plot_forgetting_curves(self):
         plt.figure(figsize=(10, 5))
         
-        # 绘制每个stage的概念和类别遗忘率
+        # Plot per-stage concept and class forgetting rates
         for stage in range(1, self.num_stages):
             plt.plot(self.concept_forgetting_rates[stage], label=f'Stage {stage+1} Concept Forgetting Rate')
             plt.plot(self.class_forgetting_rates[stage], label=f'Stage {stage+1} Class Forgetting Rate')
@@ -824,7 +825,7 @@ class IncrementalIMGTrainer(BASETrainer):
         print(f'Overall Concept Forgetting Rate: {overall_concept_forgetting_rate}')
         print(f'Overall Class Forgetting Rate: {overall_class_forgetting_rate}')
 
-        # 保存总体结果到CSV文件
+        # Save overall results to CSV
         csv_path = join(os.getcwd(), self.args.saved_dir, self.time, 'overall_metrics.csv')
         with open(csv_path, mode='w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
@@ -853,6 +854,6 @@ if __name__ == '__main__':
     parser.add_argument('-num_stages', type=int, default=2, help='number of incremental stages')
     args = parser.parse_args()
     check_dir(args.saved_dir)
-    pdb.set_trace()  # 设置断点
+    pdb.set_trace()  # breakpoint
     trainer = IncrementalIMGTrainer(parser=parser)
     trainer.train_incrementally()

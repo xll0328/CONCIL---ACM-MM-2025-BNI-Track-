@@ -106,7 +106,7 @@ class RecursiveLinear(AnalyticLinear):
         self.R -= self.R @ X.T @ K @ X @ self.R
         # Equation (9) of ACIL
         # import pdb
-        # pdb.set_trace()  # 设置断点  
+        # pdb.set_trace()
         self.weight += self.R @ X.T @ (Y - X @ self.weight)
 
 

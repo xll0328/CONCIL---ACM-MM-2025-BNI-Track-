@@ -37,7 +37,7 @@ class RandomBuffer(torch.nn.Linear, Buffer):
         W = torch.empty((out_features, in_features), **factory_kwargs)
         b = torch.empty(out_features, **factory_kwargs) if bias else None
         
-        # 初始化时创建一个随机权重矩阵 W 和偏置向量 b，并将其注册为缓冲区（register_buffer）。
+        # Random weight matrix W and bias b registered as buffer (not parameter)
         # Using buffer instead of parameter
         self.register_buffer("weight", W)
         self.register_buffer("bias", b)
@@ -45,23 +45,15 @@ class RandomBuffer(torch.nn.Linear, Buffer):
         # Random Initialization
         self.reset_parameters()
 
-    # forward 方法对输入 X 进行线性变换，并应用激活函数（默认为 ReLU）。
+    # Linear transform then activation (default ReLU)
     @torch.no_grad()
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         X = X.to(self.weight)
 
-        # 动态调整 weight 的形状
+        # Resize weight when input dimension changes (e.g. new concepts/classes)
         if X.shape[1] != self.weight.shape[1]:
             new_weight = torch.empty((self.out_features, X.shape[1]), device=self.weight.device, dtype=self.weight.dtype)
-            # # 只初始化新增的权重
-            # if X.shape[1] > self.weight.shape[1]:
-            #     new_weight[:, :self.weight.shape[1]] = self.weight
-            #     new_weight[:, self.weight.shape[1]:] = torch.randn((self.out_features, X.shape[1] - self.weight.shape[1]), device=self.weight.device, dtype=self.weight.dtype)
-            # else:
-            #     new_weight = self.weight[:, :X.shape[1]]
-
-
-            # 初始化所有的权重
+            # Initialize extended columns with random values; copy existing block
             if X.shape[1] > self.weight.shape[1]:
                 new_weight[:, :self.weight.shape[1]] = self.weight
                 new_weight[:, self.weight.shape[1]:] = torch.randn((self.out_features, X.shape[1] - self.weight.shape[1]), device=self.weight.device, dtype=self.weight.dtype)

@@ -1,3 +1,7 @@
+"""
+NOT THE FINAL CODE USED IN THE PROJECT.
+All-in-one baseline variant. For paper experiments use cl_baseline.py or CONCIL_1114.py.
+"""
 import os
 import sys
 sys.path.append(os.getcwd())
