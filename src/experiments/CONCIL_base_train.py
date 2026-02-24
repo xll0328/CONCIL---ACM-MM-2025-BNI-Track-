@@ -1022,13 +1022,23 @@ class IncrementalIMGTrainer(BASETrainer):
         print('concept accu: ', metric.concept_accu)
         print('classification accu: ', metric.clf_accu)
 
-        # Compute forgetting rates
+        # Compute forgetting rates (paper: best accuracy so far for task k minus current accuracy for task k)
         if stage > 0:
             for task in range(stage + 1):
                 if task < stage:
                     if task < len(self.stage_concept_accuracies[stage]):
-                        concept_forgetting_rate = max(self.stage_concept_accuracies[:stage][task]) - self.stage_concept_accuracies[stage][task]
-                        class_forgetting_rate = max(self.stage_class_accuracies[:stage][task]) - self.stage_class_accuracies[stage][task]
+                        best_concept = max(
+                            self.stage_concept_accuracies[j][task]
+                            for j in range(stage)
+                            if task < len(self.stage_concept_accuracies[j])
+                        )
+                        best_class = max(
+                            self.stage_class_accuracies[j][task]
+                            for j in range(stage)
+                            if task < len(self.stage_class_accuracies[j])
+                        )
+                        concept_forgetting_rate = best_concept - self.stage_concept_accuracies[stage][task]
+                        class_forgetting_rate = best_class - self.stage_class_accuracies[stage][task]
                         concept_forgetting_rates.append(concept_forgetting_rate)
                         class_forgetting_rates.append(class_forgetting_rate)
                         self.plog(f'Task {task + 1} Concept Forgetting Rate: {concept_forgetting_rate}')
@@ -1104,8 +1114,8 @@ class IncrementalIMGTrainer(BASETrainer):
             file.write('\n')
             file.write('Stage Concept Forgetting Rate and Class Forgetting Rate\n')
             for stage in range(1, self.num_stages):
-                file.write(f'Stage {stage+1} Concept Forgetting Rate: {self.concept_forgetting_rates[stage-1]}\n')
-                file.write(f'Stage {stage+1} Class Forgetting Rate: {self.class_forgetting_rates[stage-1]}\n')
+                file.write(f'Stage {stage+1} Concept Forgetting Rate: {self.concept_forgetting_rates[stage]}\n')
+                file.write(f'Stage {stage+1} Class Forgetting Rate: {self.class_forgetting_rates[stage]}\n')
 
 
     def save_stage_metrics_to_txt(self, stage, concept_accuracy, class_accuracy):
@@ -1118,8 +1128,11 @@ class IncrementalIMGTrainer(BASETrainer):
     def calculate_mean_metrics(self):
         overall_concept_accuracy = sum(self.concept_accuracies) / len(self.concept_accuracies)
         overall_class_accuracy = sum(self.class_accuracies) / len(self.class_accuracies)
-        overall_concept_forgetting_rate = sum(sum(self.concept_forgetting_rates, [])) / len(sum(self.concept_forgetting_rates, []))
-        overall_class_forgetting_rate = sum(sum(self.class_forgetting_rates, [])) / len(sum(self.class_forgetting_rates, []))
+        all_concept_fr = sum(self.concept_forgetting_rates, [])
+        all_class_fr = sum(self.class_forgetting_rates, [])
+        n_fr = len(all_concept_fr)
+        overall_concept_forgetting_rate = sum(all_concept_fr) / n_fr if n_fr else 0.0
+        overall_class_forgetting_rate = sum(all_class_fr) / n_fr if n_fr else 0.0
         self.plog(f'Overall Concept Accuracy: {overall_concept_accuracy}')
         self.plog(f'Overall Class Accuracy: {overall_class_accuracy}')
         self.plog(f'Overall Concept Forgetting Rate: {overall_concept_forgetting_rate}')

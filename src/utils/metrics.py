@@ -19,7 +19,7 @@ class Metric():
 
         self.label_count = []
         self.c_accumulator = [0] * 2
-        self.accumulator = [0] * 2
+        self.l_accumulator = [0] * 2
 
     def add(
         self,
@@ -80,13 +80,13 @@ class Metric():
 
     @property
     def concept_accu(self):
-        
-        return self.c_accumulator[0] / self.c_accumulator[1]
-    
+        n = self.c_accumulator[1]
+        return self.c_accumulator[0] / n if n else 0.0
+
     @property
     def clf_accu(self):
-
-        return self.l_accumulator[0] / self.l_accumulator[1]
+        n = self.l_accumulator[1]
+        return self.l_accumulator[0] / n if n else 0.0
     
     @property
     def clf_recall(self):
