@@ -51,15 +51,15 @@
 <p align="center">
   <img src="figures/intro-figure.png" width="85%" alt="CICIL task: sequential tasks with growing concepts and classes" />
 </p>
-<p align="center"><em>Figure 1: The CICIL task. Each task introduces new classes and expands the concept set; training and test data include input $\mathbf{x}$, concept vectors $\mathbf{c}$, and labels $y$.</em></p>
+<p align="center"><em>Figure 1: The CICIL task. Each task introduces new classes and expands the concept set; training and test data include input x, concept vectors c, and labels y.</em></p>
 
-- **T sequential tasks.** Each task $t$ has training set $\mathcal{D}_t^{\text{train}}$ and test set $\mathcal{D}_t^{\text{test}}$ with input $\mathbf{x}$, concept vectors $\mathbf{c}$, and labels $y$.
+- **T sequential tasks.** Each task $t$ has training set $\mathcal{D}_t^{\mathrm{train}}$ and test set $\mathcal{D}_t^{\mathrm{test}}$ with input **x**, concept vectors **c**, and labels **y**.
 - **Classes** are disjoint across tasks: $Y_t \cap Y_{t'} = \emptyset$ for $t' \neq t$.
-- **Concepts** are cumulative: $\mathcal{C}^{\text{concepts}}_{\leq t} = \mathcal{C}^{\text{concepts}}_{\leq t-1} \cup \mathcal{C}^{\text{concepts}}_t$.
+- **Concepts** are cumulative: at task $t$ the model sees $\mathcal{C}_{\leq t} = \mathcal{C}_{\leq t-1} \cup \mathcal{C}_t$ (growing concept set).
 - **Access:** Only current task data and previous-phase parameters are available.
 - **Objectives:** (i) **Stability** — retain accuracy on previous concepts/classes; (ii) **Plasticity** — learn new concepts and classes.
 
-The CBM has a concept extractor $g: \mathbf{x} \mapsto \mathbf{z} \mapsto \mathbf{c}$ and a classifier $f: \mathbf{c} \mapsto y$. Both concept dimension $L_{\leq t}$ and class space $|Y_{\leq t}|$ grow over phases.
+The CBM has a concept extractor $g$ (backbone + concept layer) and a classifier $f$. Both concept dimension $L_{\leq t}$ and class space $|Y_{\leq t}|$ grow over phases.
 
 ---
 
@@ -70,15 +70,15 @@ CONCIL has two stages (paper Figure 2):
 <p align="center">
   <img src="figures/framework.png" width="95%" alt="CONCIL framework: base training and incremental analytic updates" />
 </p>
-<p align="center"><em>Figure 2: CONCIL framework. Base training (Task 0) jointly trains backbone, concept layer, and classifier; backbone is then frozen. Incremental tasks use recursive analytic updates for concept layer ($W_c$) and classifier ($W_y$) with expanding concept/class dimensions.</em></p>
+<p align="center"><em>Figure 2: CONCIL framework. Base training (Task 0) jointly trains backbone, concept layer, and classifier; backbone is then frozen. Incremental tasks use recursive analytic updates for concept layer and classifier with expanding concept/class dimensions.</em></p>
 
 1. **Base training (phase 0):** Jointly train backbone $g_1$, concept layer $g_2$, and classifier $f$; then **freeze the backbone**.
-2. **Feature expansion:** Map $\mathbf{z}$ to $\mathbf{z}^* = \sigma(\mathbf{z} W_{fe})$ (and similarly for concept→class). This increases capacity for the analytic layers.
-3. **Incremental phases ($t \geq 1$):**
-   - **Concept layer:** Regularized linear regression from $\mathbf{z}^*$ to $\mathbf{c}$; recursive update via Sherman–Morrison–Woodbury using current-phase data and $R_c^{(t-1)}$. Update $W_c^{(t)}$ with columns for old and new concepts.
+2. **Feature expansion:** Map backbone output **z** to **z*** = σ(**z** W_fe) (and similarly for concept→class). This increases capacity for the analytic layers.
+3. **Incremental phases (t ≥ 1):**
+   - **Concept layer:** Regularized linear regression from **z*** to **c**; recursive update via Sherman–Morrison–Woodbury using current-phase data and $R_c^{(t-1)}$. Update $W_c^{(t)}$ with columns for old and new concepts.
    - **Classifier:** Linear regression from expanded concepts to labels; recursive update for $R_y^{(t)}$ and $W_y^{(t)}$ for old and new classes.
 
-**Hyperparameters (paper Section 5.4):** $\lambda_1 = 500$, $\lambda_2 = 1$, $d_{z^*} = 25000$, $d_{\hat{C}^*} = 25000$. Phase split: initial phase uses first 50% of classes and 50% of concepts; each subsequent phase adds a fraction of the remainder (e.g. $(1-n\%)/(p-1)$ of classes and $(1-m\%)/(p-1)$ of concepts for $p$ phases).
+**Hyperparameters (paper Section 5.4):** λ₁ = 500, λ₂ = 1, d_z* = 25000, d_ĉ* = 25000. Phase split: initial phase uses first 50% of classes and 50% of concepts; each subsequent phase adds a fraction of the remainder.
 
 ---
 
@@ -89,7 +89,7 @@ CONCIL has two stages (paper Figure 2):
 <p align="center">
   <img src="figures/incremental_learning_results.png" width="90%" alt="CONCIL vs baseline: accuracy and forgetting rates" />
 </p>
-<p align="center"><em>CONCIL vs. baseline: average concept/class accuracy (top) and average concept/class forgetting rate (bottom) across phases on CUB and AwA.</em></p>
+<p align="center"><em>CONCIL vs. baseline: average concept and class accuracy (top) and average concept and class forgetting rate (bottom) across phases on CUB and AwA.</em></p>
 
 Additional per-phase visualizations: see `VISUAL/` (e.g. `CONCIL-CUB-phase_*.png`, `Baseline-AwA-phase_*.png`). Notebooks in `VISUAL/` can be used to reproduce or extend plots.
 
@@ -182,9 +182,9 @@ python src/experiments/CONCIL_1114.py \
 |----------------|---------|--------------------------------|
 | `-dataset`     | cub     | `cub` or `awa`                 |
 | `-num_stages`  | 8       | Number of incremental phases   |
-| `-buffer_size` | 25000   | Replay buffer size ($d_{z^*}$) |
-| `-gg1`         | 500     | Concept regularization ($\lambda_1$) |
-| `-gg2`         | 1       | Class regularization ($\lambda_2$)   |
+| `-buffer_size` | 25000   | Replay buffer size (d_z*) |
+| `-gg1`         | 500     | Concept regularization (λ₁) |
+| `-gg2`         | 1       | Class regularization (λ₂)   |
 | `-saved_dir`   | —       | Logs and results               |
 
 **Batch experiments:**
@@ -205,10 +205,10 @@ python src/experiments/cl_baseline.py -dataset cub -num_stages 8 -saved_dir resu
 
 ## Metrics
 
-- **Average concept accuracy** $A_{\text{concept}}(t)$: mean concept accuracy over tasks 1…t.
-- **Average class accuracy** $A_{\text{class}}(t)$: mean class accuracy over tasks 1…t.
-- **Average concept forgetting rate** $F_{\text{concept}}(t)$: mean drop in concept accuracy on previous tasks vs. their best.
-- **Average class forgetting rate** $F_{\text{class}}(t)$: mean drop in class accuracy on previous tasks vs. their best.
+- **Average concept accuracy** $A_{\mathrm{concept}}(t)$: mean concept accuracy over tasks 1…t.
+- **Average class accuracy** $A_{\mathrm{class}}(t)$: mean class accuracy over tasks 1…t.
+- **Average concept forgetting rate** $F_{\mathrm{concept}}(t)$: mean drop in concept accuracy on previous tasks vs. their best.
+- **Average class forgetting rate** $F_{\mathrm{class}}(t)$: mean drop in class accuracy on previous tasks vs. their best.
 
 Higher accuracy and lower forgetting rates are better.
 
